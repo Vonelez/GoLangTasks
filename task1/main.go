@@ -9,6 +9,12 @@ import (
 	"strings"
 )
 
+func die(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func Sorting(unsortedNums []int) []int {
 
 	for i := range unsortedNums {
@@ -26,15 +32,14 @@ func Sorting(unsortedNums []int) []int {
 
 func DataToSlice(inputFilePath string) []int {
 	content, err := ioutil.ReadFile(inputFilePath)
-	if err != nil {
-		fmt.Println("HAZARD")
-	}
+	die(err)
 	dataString := strings.Split(string(content), "\n")
 	helpString := strings.Join(dataString, " ")
 	momentString := strings.Split(helpString, " ")
 	momentArray := make([]int, len(momentString))
 	for i := range momentArray {
-		momentArray[i], _ = strconv.Atoi(momentString[i])
+		momentArray[i], err = strconv.Atoi(momentString[i])
+		die(err)
 	}
 	return momentArray
 }
@@ -42,12 +47,14 @@ func DataToSlice(inputFilePath string) []int {
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Insert file path and name")
-	fileInput, _ := reader.ReadString('\n')
+	fileInput, err := reader.ReadString('\n')
+	die(err)
 	fileInput = strings.TrimSuffix(fileInput, "\n")
 
 	outputArray := Sorting(DataToSlice(fileInput))
 
-	fileOutput, _ := os.Create("output.txt")
+	fileOutput, err := os.Create("output.txt")
+	die(err)
 	defer fileOutput.Close()
 
 	for i := range outputArray {
